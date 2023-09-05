@@ -1,41 +1,55 @@
 #include <iostream>
-#include <vector>
 using namespace std;
 
-void displaySubset(const vector<int>& subset) {
-    cout << "{ ";
-    for (int num : subset) {
-        cout << num << " ";
+int count, w[10], d, x[10];
+
+void subset(int cs, int k, int r) {
+    int i;
+    x[k] = 1;
+
+    if (cs + w[k] == d) {
+        cout << "Subset solution = " << ++::count << endl; // Use ::count to refer to the global count
+        for (i = 0; i <= k; i++) {
+            if (x[i] == 1) {
+                cout << w[i] << " ";
+            }
+        }
+        cout << endl;
+    } else if (cs + w[k] + w[k + 1] <= d) {
+        subset(cs + w[k], k + 1, r - w[k]);
     }
-    cout << "}" << endl;
-}
 
-void findSubsets(const vector<int>& set, vector<int>& subset, int index, int targetSum, int currentSum) {
-    if (currentSum == targetSum) {
-        displaySubset(subset);
-        return;
+    if ((cs + r - w[k] >= d) && (cs + w[k + 1] <= d)) {
+        x[k] = 0;
+        subset(cs, k + 1, r - w[k]);
     }
-
-    if (index == set.size() || currentSum > targetSum) {
-        return;
-    }
-
-    // Include the current element in the subset
-    subset.push_back(set[index]);
-    findSubsets(set, subset, index + 1, targetSum, currentSum + set[index]);
-    subset.pop_back(); // Backtrack
-
-    // Exclude the current element from the subset
-    findSubsets(set, subset, index + 1, targetSum, currentSum);
 }
 
 int main() {
-    vector<int> set = {1, 2, 5, 6, 8};
-    int targetSum = 9;
+    int sum = 0, i, n;
+    cout << "Enter the number of elements" << endl;
+    cin >> n;
+    cout << "Enter the elements in ascending order" << endl;
 
-    vector<int> subset;
-    cout << "Subsets with sum " << targetSum << ":\n";
-    findSubsets(set, subset, 0, targetSum, 0);
+    for (i = 0; i < n; i++) {
+        cin >> w[i];
+    }
+
+    cout << "Enter the required sum" << endl;
+    cin >> d;
+
+    for (i = 0; i < n; i++) {
+        sum += w[i];
+    }
+
+    if (sum < d) {
+        cout << "No solution exists" << endl;
+        return 0;
+    }
+
+    cout << "The solution is" << endl;
+    ::count = 0; // Initialize the global count
+    subset(0, 0, sum);
 
     return 0;
 }
