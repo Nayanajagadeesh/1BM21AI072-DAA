@@ -1,64 +1,42 @@
 #include <iostream>
-#include <string>
-#include <vector>
+#include <cstring>
 using namespace std;
 
-const int ALPHABET_SIZE = 256;
-
-void generateBadCharTable(const string& pattern, vector<int>& badChar) {
-    int patternLength = pattern.length();
-
-    for (int i = 0; i < ALPHABET_SIZE; ++i) {
-        badChar[i] = patternLength;
-    }
-
-    for (int i = 0; i < patternLength - 1; ++i) {
-        badChar[pattern[i]] = patternLength - 1 - i;
-    }
-}
-
-int hoorespoolSearch(const string& text, const string& pattern) {
-    int textLength = text.length();
-    int patternLength = pattern.length();
-
-    if (patternLength > textLength) {
-        return -1; // Pattern is longer than the text, no match possible
-    }
-
-    vector<int> badChar(ALPHABET_SIZE);
-    generateBadCharTable(pattern, badChar);
-
-    int shift = 0;
-    while (shift <= textLength - patternLength) {
-        int j = patternLength - 1;
-        while (j >= 0 && pattern[j] == text[shift + j]) {
-            j--;
-        }
-
-        if (j < 0) {
-            return shift; // Match found at this shift
-        } else {
-            shift += badChar[text[shift + patternLength - 1]];
-        }
-    }
-
-    return -1; // No match found
-}
-
 int main() {
-    string text, pattern;
-    cout << "Enter the text: ";
-    cin >> text;
+    int table[126];
+    char t[100], p[25];
+    int n, i, k, j, m, flag = 0;
 
-    cout << "Enter the pattern to search: ";
-    cin >> pattern;
+    cout << "Enter the Text" << endl;
+    cin.getline(t, 100);
+    n = strlen(t);
 
-    int matchIndex = hoorespoolSearch(text, pattern);
-    if (matchIndex != -1) {
-        cout << "Pattern found at index " << matchIndex << " in the text." << endl;
-    } else {
-        cout << "Pattern not found in the text." << endl;
+    cout << "Enter the Pattern" << endl;
+    cin.getline(p, 25);
+    m = strlen(p);
+
+    for (i = 0; i < 126; i++)
+        table[i] = m;
+
+    for (j = 0; j <= m - 2; j++)
+        table[p[j]] = m - 1 - j;
+
+    i = m - 1;
+    while (i <= n - 1) {
+        k = 0;
+        while (k <= m - 1 && p[m - 1 - k] == t[i - k])
+            k++;
+
+        if (k == m) {
+            cout << "The position of the pattern is " << i - m + 2 << endl;
+            flag = 1;
+            break;
+        } else
+            i = i + table[t[i]];
     }
+
+    if (!flag)
+        cout << "Pattern is not found in the given text" << endl;
 
     return 0;
 }
